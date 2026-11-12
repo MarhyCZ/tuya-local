@@ -1,0 +1,67 @@
+name: CCT lightbulb
+products:
+  - id: ewxuxtzrwf4zxyqj
+    manufacturer: Oranžovka
+    model: E27 11W 1600-4000K
+entities:
+  - entity: light
+    dps:
+      - id: 20
+        type: boolean
+        name: switch
+      - id: 21
+        name: work_mode
+        type: string
+      - id: 22
+        name: brightness
+        type: integer
+        range:
+          min: 10
+          max: 1000
+      - id: 23
+        name: color_temp
+        type: integer
+        range:
+          min: 0
+          max: 1000
+        mapping:
+          - target_range:
+              min: 1600
+              max: 4000
+  - entity: time
+    translation_key: timer
+    category: config
+    dps:
+      - id: 26
+        type: integer
+        name: second
+        optional: true
+        range:
+          min: 0
+          max: 86400
+  - entity: text
+    translation_key: scene
+    category: config
+    hidden: true
+    dps:
+      - id: 25
+        type: hex
+        optional: true
+        name: value
+  - entity: switch
+    translation_key: do_not_disturb
+    category: config
+    hidden: unavailable
+    dps:
+      - id: 34
+        type: boolean
+        optional: true
+        name: switch
+      - id: 34
+        type: boolean
+        optional: true
+        name: available
+        mapping:
+          - dps_val: null
+            value: false
+          - value: true
