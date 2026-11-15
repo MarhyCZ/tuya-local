@@ -1,0 +1,43 @@
+# Keeps this fork on the latest make-all/tuya-local release, plus the
+# Oranžovka bulb config, and publishes a matching release for HACS.
+name: Sync upstream release
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge new upstream release and publish it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=$(gh api repos/make-all/tuya-local/releases/latest --jq .tag_name)
+          OURS="${TAG}-oranzovka"
+          if gh release view "$OURS" > /dev/null 2>&1; then
+            echo "Already on upstream $TAG"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --no-tags https://github.com/make-all/tuya-local.git "refs/tags/$TAG:refs/tags/upstream-$TAG"
+          # Fails (and GitHub emails you) if upstream ever touches our files.
+          git merge --no-edit -m "Merge upstream release $TAG" "upstream-$TAG"
+          git push origin main
+
+          gh release create "$OURS" --target main \
+            --title "$TAG + Oranžovka bulb" \
+            --notes "Upstream release [$TAG](https://github.com/make-all/tuya-local/releases/tag/$TAG) with the Oranžovka E27 1600-4000K bulb config added."
