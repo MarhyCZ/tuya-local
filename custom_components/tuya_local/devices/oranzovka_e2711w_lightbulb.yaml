@@ -3,6 +3,9 @@ products:
   - id: ewxuxtzrwf4zxyqj
     manufacturer: Oranžovka
     model: E27 11W 1600-4000K
+  - id: 6wji4o0vr9crq0y8
+    manufacturer: Oranžovka
+    model: E14 5W 1600-4000K
 entities:
   - entity: light
     dps:
